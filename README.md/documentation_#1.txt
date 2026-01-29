@@ -1,0 +1,97 @@
+13.12.25 -- Budapest, Hungary 
+Nurmuhammed Kanybekov, CS in Computer Science (BSc)
+
+Chapter 1: The One-Day Compiler Challenge
+
+The first version of my compiler will be super simple (basically because I have only one day for that :D). The main goal is - 
+to keep it simple, but at the same time, it should give the person who creates it a huge amount of experience. 
+
+So my strategy for this project is:
+
+(1) Keep it simple
+
+For that, I will create a "toy language". A language which will support:
+-> Data Types: integers only
+-> Variables: storing and retrieving values (e.g., x = 10;)
+-> Math: Basic arithmetics (+, -, *, /)
+-> Output: A function to print results (e.g., print(result);)
+
+I will use the LLVM C API (Core) to handle the heavy lifting of machine code generation.
+
+(2) The Architecture
+
+I need to break the project into three distinct stages:
+
+1 - The Lexer (Scanner):
+-> Input: Source code string.
+-> Action: Break the string into Tokens (identifier: x, equals: =, number: 5, etc).
+
+2 - The Parser:
+-> Input: The list of Tokens.
+-> Action: Organize tokens into a structure called an Abstract Syntax Tree (AST). (This represents the logic and order of operations).
+
+3 - The Code Generator (LLVM):
+-> Input: The AST.
+-> Action: Traverse the tree and call LLVM C functions to generate LLVM IR (Intermediate Representation). 
+
+(3) The Environment & "Gotchas"
+
+This was the hardest part. Modern LLVM (v15+) uses Opaque Pointers, which caused segmentation faults when using older helper functions like LLVMBuildGlobalStringPtr. 
+
+To fix this, I had to:
+-> Explicitly create a global context (LLVMContextCreate).
+-> Manually construct global strings for printf.
+-> Point specifically to the Homebrew LLVM installation on macOS, as the default Apple Clang is too old.
+
+(4) Project Structure (Refactoring)
+
+To make the project professional and maintainable, I moved away from a single messy folder to a structured C project layout:
+
+/compiler_project
+  ├── Makefile                       
+  ├── src/                         
+  ├── include/                                  
+  ├── prerequisites
+  ├── documentation
+  └── build
+  
+This separation allows for cleaner code management and easier scaling in the future.
+
+(5) Evolution of the Build Process
+
+Phase A: Static Compilation
+Write Code -> Compile to IR -> Save to .ll File -> Use Clang to compile file -> Run.
+
+Phase B: JIT Compilation
+We added the LLVM Execution Engine. Now, the compiler writes machine code directly into RAM and executes it immediately.
+Write Code -> Compile to Memory -> Run Instantly!
+
+==========
+How to run
+==========
+
+Thanks to the Makefile, the complex compilation command is now automated.
+
+1. Build the project:
+make
+
+2. Run the compiler with code:
+./my_jit_compiler "x = 10; y = 5; print(x * y + 2);"
+
+Output:
+Executing: "x = 10; y = 5; print(x * y + 2);"
+-------------------------
+[JIT] Module verified. Preparing execution engine...
+[JIT] Running program...
+
+--- PROGRAM OUTPUT START ---
+52
+--- PROGRAM OUTPUT END ---
+
+3. Clean up build files:
+make clean
+
+
+
+-- 
+compgen -c | fzf | xargs man => wow, try it.
