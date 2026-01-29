@@ -1,8 +1,5 @@
 # Custom Compiler & JIT Engine
 
-**Nurmuhammed Kanybekov**
-Budapest, Hungary
-
 ## Project Overview: The One-Day Compiler Challenge
 
 This project was built under a strict self-imposed deadline to create a functional compiler frontend and execution engine from scratch. The primary goal was to demystify compiler internals by building a system that doesn't just parse text, but generates machine code and executes it in memory.
