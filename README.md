@@ -1,4 +1,4 @@
-# Custom Compiler & JIT Engine
+# Compiler & JIT Engine
 
 ## Project Overview: The One-Day Compiler Challenge
 
